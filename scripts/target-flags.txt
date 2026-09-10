@@ -1,0 +1,20 @@
+# Canonical target flags shared by build-target.ps1 and build-target.sh.
+[CFLAGS]
+-march=armv4t
+-mcpu=arm920t
+-marm
+-mabi=apcs-gnu
+-mfloat-abi=soft
+-Os
+-Wall
+-Wextra
+-std=c99
+-ffreestanding
+-fno-builtin
+-fno-stack-protector
+[LDFLAGS]
+-nostdlib
+-nodefaultlibs
+-nostartfiles
+-Wl,--no-warn-mismatch
+-Wl,-e,_start

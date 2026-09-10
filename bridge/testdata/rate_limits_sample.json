@@ -1,0 +1,19 @@
+{
+  "result": {
+    "rateLimits": {
+      "primary": {
+        "usedPercent": 22,
+        "windowDurationMins": 300,
+        "resetsAt": 1788966311
+      },
+      "secondary": {
+        "usedPercent": 13,
+        "windowDurationMins": 10080,
+        "resetsAt": 1789448757
+      }
+    },
+    "rateLimitResetCredits": {
+      "availableCount": 3
+    }
+  }
+}

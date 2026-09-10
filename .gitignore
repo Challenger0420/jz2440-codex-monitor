@@ -1,0 +1,25 @@
+# Generated builds and release artifacts
+build/
+bridge/bin/
+bridge/obj/
+
+# IDE and local tooling state
+.vs/
+.vscode/
+.playwright-cli/
+__pycache__/
+*.pyc
+
+# Compiled and transient files
+*.o
+*.obj
+*.elf
+*.exe
+*.ppm
+*.log
+*.tmp
+
+# Local credentials and configuration
+.env
+.env.*
+auth.json

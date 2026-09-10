@@ -10,6 +10,11 @@ Windows Codex quota
     -> 480x272 RGB565 LCD
 ```
 
+![UI preview](docs/images/ui-preview.png)
+
+This is an experimental hobby project. The monitor has been validated on a
+JZ2440 board running Linux 2.6.22.6.
+
 ## Hardware target
 
 - Samsung S3C2440A / ARM920T / ARMv4T
@@ -35,6 +40,10 @@ Windows Codex quota
 - ARMv4T/ARM920T-compatible build flags.
 - Direct serial input mode and a debug stdin mode.
 - Framebuffer renderer with generated Oxanium bitmap glyphs and RGB565 alpha blending where needed.
+
+Modern ordinary ARM EABI binaries may not run on this old target system. The
+target therefore uses ARMv4T, ARM920T, APCS GNU/OABI, freestanding, and
+`nostdlib` settings rather than a conventional modern ARM/glibc build.
 
 The target displays:
 

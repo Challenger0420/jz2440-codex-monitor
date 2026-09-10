@@ -1,6 +1,6 @@
 # JZ2440 Codex Monitor
 
-一个面向 JZ2440/S3C2440A 的单页面 Codex quota monitor：
+A single-page Codex quota monitor for the JZ2440/S3C2440A:
 
 ```text
 Windows Codex quota

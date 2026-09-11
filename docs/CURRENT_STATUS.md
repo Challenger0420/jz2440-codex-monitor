@@ -4,14 +4,14 @@
 Project direction: Generic JZ2440 Application Platform
 Implemented app: Codex Monitor v1
 Reusable platform: appctl, Board Controller, serial transport, target runtime
-GitHub remote: Challenger0420/jz2440-codex-monitor
+GitHub repository: Challenger0420/jz2440-app-platform
 ```
 
-## Recorded Codex Monitor candidate
+## Final Codex Monitor target
 
 ```text
 Size: 51400 bytes
-SHA256: BAB360BA6B599E8B788CEFC9CDC46625523C693B310F700C1FCF9E93D4ED5C8A
+SHA256: 8C2C20DB7E2C1217B385E4BADADDF1B9769C9C7C2EC96ED6FA26290EBE92EA35
 Target: S3C2440A / ARM920T / ARMv4T / Linux 2.6.22.6
 ABI: freestanding custom OABI runtime, no libc or dynamic linker
 ```
@@ -92,8 +92,8 @@ path.
 
 ## Git rule
 
-No `git add`, `commit`, `push`, tag, release, or remote rename without an
-explicit user instruction. This restructuring performed no commit or push.
+The repository identity was finalized and pushed to `main`. Future commits
+and pushes still require explicit user instruction.
 
 ## Handoff
 

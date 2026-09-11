@@ -10,8 +10,7 @@ Current applications:
 - Codex Monitor: the first validated application.
 - Future applications, including Research Status, are not implemented here.
 
-The GitHub remote remains `Challenger0420/jz2440-codex-monitor` for now. The
-repository has not been renamed, committed, or pushed by this restructuring.
+The GitHub repository is `Challenger0420/jz2440-app-platform`.
 
 ## Platform layout
 

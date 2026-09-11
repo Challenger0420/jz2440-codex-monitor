@@ -1,91 +1,77 @@
-# JZ2440 Codex Monitor
+# JZ2440 App Platform
 
-A single-page Codex quota monitor for the JZ2440/S3C2440A:
+JZ2440 App Platform is a lightweight application platform for the
+JZ2440/S3C2440A. It provides a reusable board launcher, Windows-side board
+controller, serial application mode, framebuffer runtime, and target build
+tooling for multiple embedded applications.
 
-```text
-Windows Codex quota
-    -> Windows Bridge
-    -> PL2303 USB serial
-    -> JZ2440
-    -> 480x272 RGB565 LCD
-```
+Current applications:
 
-![UI preview](docs/images/ui-preview.png)
+- Codex Monitor: the first validated application.
+- Future applications, including Research Status, are not implemented here.
 
-This is an experimental hobby project. The monitor has been validated on a
-JZ2440 board running Linux 2.6.22.6.
+The GitHub remote remains `Challenger0420/jz2440-codex-monitor` for now. The
+repository has not been renamed, committed, or pushed by this restructuring.
 
-## Hardware target
+## Platform layout
 
-- Samsung S3C2440A / ARM920T / ARMv4T
-- Linux 2.6.22.6
-- 64 MB RAM
-- `/dev/fb0`, 480x272, RGB565
-- Direct serial backend: `/dev/s3c2410_serial0`
-- USB-COM1 uses an authentic Prolific PL2303 device; the Windows COM number may change after reconnecting.
+- `platform/board/appctl/`: BusyBox-compatible foreground application launcher.
+- `platform/host/board-controller/`: serial transport, PL2303 discovery, and Console/Application mode controller.
+- `platform/target/runtime/`: ARMv4T/ARM920T freestanding OABI startup and syscall runtime.
+- `platform/target/renderer/`: reserved for renderer extraction after a second real consumer exists; the current renderer stays app-local to preserve behavior.
+- `apps/codex-monitor/`: Codex-specific target, host, protocol, and UI.
+- `third_party/fonts/oxanium/`: Oxanium font sources and SIL OFL license.
+- `scripts/build/`, `scripts/deploy/`, `scripts/verify/`: reproducible build and future field workflows.
 
-## Architecture
+The single UART is time-multiplexed: Console Mode hands control to a
+foreground application, the shell waits while the application owns RX, and
+the application exit path restores Qtopia. Board autostart through `rcS` is a
+rejected design because the legacy `askfirst` shell competes for the same UART.
 
-### Windows Bridge
+## Codex Monitor
 
-- Reads real Codex quota through the local Codex app-server.
-- Encodes quota snapshots as the versioned CQM1 protocol.
-- Uses 115200 8N1 with no flow control.
-- Automatically discovers the unique Prolific device by `VID_067B&PID_2303`, while allowing an explicit `--port COMx` override.
-- Retries provider, serial-open, write, disconnect, and reconnect failures without sending fabricated quota values.
-
-### JZ2440 target
-
-- Freestanding OABI syscall runtime; no target libc or dynamic linker.
-- ARMv4T/ARM920T-compatible build flags.
-- Direct serial input mode and a debug stdin mode.
-- Framebuffer renderer with generated Oxanium bitmap glyphs and RGB565 alpha blending where needed.
-
-Modern ordinary ARM EABI binaries may not run on this old target system. The
-target therefore uses ARMv4T, ARM920T, APCS GNU/OABI, freestanding, and
-`nostdlib` settings rather than a conventional modern ARM/glibc build.
-
-The target displays:
-
-- 5-Hour Quota and reset time
-- Weekly Quota and reset date/time
-- Reset Cards
-- Current time and stale status
-
-Font licensing is documented in [docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md).
+See [apps/codex-monitor/README.md](apps/codex-monitor/README.md) for the
+validated display, CQM request/response protocol, host Bridge, and current
+hardware/software gates.
 
 ## Build and preview
 
-Target compilation requires the Ubuntu ARM GNU cross-toolchain used for the
-validated build (`arm-linux-gnueabi-gcc` 11.4.0 and matching binutils). The
-canonical flags are in [scripts/target-flags.txt](scripts/target-flags.txt),
-and the reproducible build/inspection workflow is documented in
-[docs/BUILD_TARGET.md](docs/BUILD_TARGET.md).
+Target compilation uses the validated Ubuntu ARM GNU toolchain and frozen
+flags in [scripts/build/target-flags.txt](scripts/build/target-flags.txt):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\build-target.ps1
-python scripts\preview.py
+powershell -ExecutionPolicy Bypass -File scripts\build\build-target.ps1
+powershell -ExecutionPolicy Bypass -File scripts\build\build-bridge.ps1
+python apps\codex-monitor\tools\preview.py
 ```
 
-The host preview reuses the formal target renderer. A review copy is kept at
-[docs/images/ui-preview.png](docs/images/ui-preview.png); generated build
-outputs under `build/` are intentionally not committed.
+The root Makefile also provides `make codex-monitor`, `make preview`,
+`make status-preview`, and `make bridge` where the corresponding toolchain is
+available. Generated outputs remain under `build/` and are not committed.
 
-## Current validation status
+## Current handoff status
 
-- `FONT_HARDWARE_GATE = PASS`
-- `UI_FINAL_GATE = PASS`
-- `DEPLOYMENT_PREP_GATE = PASS`
-- Latest validated target: 50320 bytes, SHA256 `F933F354A2F95AB713930E60E61F6380AFBFB41918D37B6EB1CB8263A8DD96A9`
-- Persistent deployment: **NOT YET ENABLED**
+- `APP_PLATFORM_DESIGN_GATE = PASS`
+- `APPCTL_IMPLEMENTATION_GATE = PASS`
+- `APPCTL_STATIC_COMPAT_GATE = PASS`
+- `BOARD_CONTROLLER_STATE_MACHINE_GATE = PASS`
+- `BOARD_CONTROLLER_SIMULATION_GATE = PASS`
+- `CODEX_ADAPTER_GATE = PASS`
+- `REQUEST_RESPONSE_PROTOCOL_GATE = PASS`
+- `HOST_TX_SILENCE_GATE = PASS`
+- `STATUS_UI_PREVIEW_GATE = PASS`
+- `STATUS_BUILD_GATE = PASS`
+- `DEPLOYMENT_SCRIPT_PREP_GATE = PASS`
+- `USB_RECONNECT_FINAL_GATE = PASS`
+- `STATUS_HARDWARE_GATE = PASS`
+- `WINDOWS_AUTOSTART_GATE = DEFERRED`
 
-The project has not modified U-Boot, bootargs, kernel, NAND, rootfs, init, or
-Qtopia startup files, and has not configured monitor autostart. Temporary
-target test files belong under `/tmp` on the board only.
+The recorded final Codex Monitor target is 51400 bytes with SHA256
+`8C2C20DB7E2C1217B385E4BADADDF1B9769C9C7C2EC96ED6FA26290EBE92EA35`.
+The board safe baseline remains Qtopia running and Monitor stopped. No
+U-Boot, bootargs, kernel, NAND, rootfs, init, Qtopia startup file, or remote
+repository setting was changed by this restructuring.
 
-## Repository scope
-
-This repository contains source code, build scripts, documentation, and the
-build-time font inputs needed to reproduce the target. Local build outputs,
-compiled Bridge binaries, logs, IDE state, credentials, and temporary files
-are excluded by [.gitignore](.gitignore).
+More detail is in [docs/CURRENT_STATUS.md](docs/CURRENT_STATUS.md),
+[docs/architecture/OVERVIEW.md](docs/architecture/OVERVIEW.md), and
+[docs/architecture/REPOSITORY_LAYOUT.md](docs/architecture/REPOSITORY_LAYOUT.md).
